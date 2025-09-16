@@ -1,8 +1,37 @@
 PLAN
 
 1. grille
+    - affichage (score, zappeur, teleporteur)
+    - grille faite de "#" cadre de "|"
+    - format (changeable idéalement) 15 x 8 on prend en compte juste les cases (#)
+    - affichage de l'écran gameover
 
-
-2. Daleks + Doctor
+2. Entité
+    - Docteur (X)
+        - case de deplacement (1 case en croix)
+        - vies (1)
+        - zappeur (utilisé ou non)
+        - teleporteur (utilisé ou non)
+    - Daleks (D)
+        - deplacement (meme que docteur)
+        - vie (1)
+        - crédits cosmique donné à la mort
+    - ferailles (O)
+        - si dalek touche meurt
+        - apparait si deux dalek rentre en collision
 
 3. deplacement
+    - Comment deplacer les entité dans la grille
+    - tour par tour
+    - teleporteur
+        - aléatoire sur la map (pas sur une entité)
+
+4. tas de ferailles
+    - se promene aléatoirement dans la grille
+
+5. spawn des Daleks
+    - à chaque (trois) tours nouveau Daleks qui spawn
+    - spawn aléatoire sur la map (pas sur une entité déjà présente) 
+6. zappeur 
+    - blast les dalek en croix autour du docteur
+7. 

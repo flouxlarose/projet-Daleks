@@ -2,25 +2,24 @@ import keyboard
 import msvcrt
 import os
 
-# Grille
+docSymbole = "🔷"
+vide = "🔲"
+dalekSymbole = "🔶"
+feraille = "🔳"
 
-COL = 4
-LIG = 10
 vie = 1
-
-docSymbole = "D"
-vide = "#"
-dalekSymbole = "X"
-feraille = "o"
-
 docteurAncienX = 0
 docteurAncienY = 0
 
 grille = [
-    [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide, vide],
-    [vide, dalekSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
+    [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, feraille, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
 ]
 
 class Docteur:

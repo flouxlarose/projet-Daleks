@@ -1,4 +1,3 @@
-import keyboard
 import msvcrt
 import os
 
@@ -11,17 +10,6 @@ vie = 1
 docteurAncienX = 0
 docteurAncienY = 0
 
-grille = [
-    [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, feraille, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-]
-
 class Docteur:
     def __init__(self, vie, deplacement, x, y):
         self.vieDocteur = vie
@@ -33,6 +21,27 @@ class Docteur:
         self.positionY = y
 
 doc = Docteur(1,1,0,0)
+
+class Dalek:
+    def __init__(self, vie, deplacement, valeur, x, y):
+        self.vieDalek = vie
+        self.deplacementDalek = deplacement
+        self.valeurCosmique = valeur
+        self.positionX = x
+        self.positionY = y
+
+dalek = Dalek(1,1,10,0,0)
+
+grille = [
+    [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, feraille, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+]
 
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
@@ -53,13 +62,17 @@ def on_key_event(keyPressed):
     if keyPressed == b'\xe0':
         key2 = msvcrt.getch()
         if key2 == b'H':
-            doc.positionY -= 1
+            if doc.positionY > 0:
+                doc.positionY -= 1              
         elif key2 == b'P':
-            doc.positionY += 1
+            if doc.positionY < 7:
+                doc.positionY += 1
         elif key2 == b'K':
-            doc.positionX -= 1
+            if doc.positionX > 0:
+                doc.positionX -= 1
         elif key2 == b'M':
-            doc.positionX += 1
+            if doc.positionX < 8:
+                doc.positionX += 1
     else:
         print(f"Touche pressée : {key.decode()}")
 

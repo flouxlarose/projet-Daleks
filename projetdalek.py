@@ -1,5 +1,7 @@
 import keyboard
 import msvcrt
+import os
+
 # Grille
 
 COL = 4
@@ -10,7 +12,6 @@ docSymbole = "D"
 vide = "#"
 dalekSymbole = "X"
 feraille = "o"
-
 
 docteurAncienX = 0
 docteurAncienY = 0
@@ -34,9 +35,16 @@ class Docteur:
 
 doc = Docteur(1,1,0,0)
 
-def deplacer_docteur(grille, ancienX, ancienY, nouveauX, nouveauY):
-    grille[ancienY][ancienX] = vide
-    grille[nouveauY][nouveauX] = doc
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+def deplacer_docteur(grille, nouveauX, nouveauY):
+    global docteurAncienX
+    global docteurAncienY
+    grille[docteurAncienY][docteurAncienX] = vide
+    grille[nouveauY][nouveauX] = docSymbole
+    docteurAncienX = nouveauX
+    docteurAncienY = nouveauY
 
 def afficher_grille(grille):
     for ligne in grille:
@@ -52,7 +60,7 @@ def on_key_event(keyPressed):
         elif key2 == b'K':
             doc.positionX -= 1
         elif key2 == b'M':
-            doc.positionY += 1
+            doc.positionX += 1
     else:
         print(f"Touche pressée : {key.decode()}")
 
@@ -60,8 +68,9 @@ def main():
     afficher_grille(grille)
     while True:
         keyPressed = msvcrt.getch()
+        cls()
         on_key_event(keyPressed)
-        deplacer_docteur(grille, docteurAncienX, docteurAncienY, doc.positionX, doc.positionY)
+        deplacer_docteur(grille, doc.positionX, doc.positionY)
         afficher_grille(grille)
 
 if __name__ == "__main__":

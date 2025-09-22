@@ -10,7 +10,7 @@ class Docteur:
         self.positionX = x
         self.positionY = y
 
-class dalek:
+class Dalek:
     def __init__(self, vie, deplacement, valeur, x, y):
         self.vieDalek = vie
         self.deplacementDalek = deplacement
@@ -35,9 +35,20 @@ grille = [
 
 afficher_grille(grille)
 
-direction = ["up", "right", "down", "left"]
+collectionDalek = []
+dalek1 = Dalek(2,3,4,5,6)
+dalek1.position = 2
+dalek2 = Dalek(2,3,4,5,6)
+dalek3 = Dalek(2,3,4,5,6)
+collectionDalek.append(dalek1)
+collectionDalek.append(dalek2)
+collectionDalek.append(dalek3)
+collectionDalek[1]
+
+
 
 def mooveEntity(x, y, deplacement):
+    direction = ["up", "right", "down", "left"]
     random = randint(0, 3)
     if direction[random] == "up":
         y -= 1

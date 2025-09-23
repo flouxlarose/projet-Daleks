@@ -41,7 +41,7 @@ grille = [
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
     [vide, vide, feraille, vide, vide, vide, vide, vide, vide],
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
@@ -62,11 +62,11 @@ def deplacer_docteur(grille, nouveauX, nouveauY):
     if nbDeplacement % 3 == 0:
         creer_dalek(1, 1, 10, 0, 0)
 
-
 def creer_dalek(vie, deplacement, valeur, x, y):
     global nbDalek
     dalek = Dalek(vie,deplacement,valeur,x,y)
     collectionDalek.append(dalek)
+    grille[y][x] = dalekSymbole
     nbDalek+=1
 
 
@@ -92,24 +92,33 @@ def on_key_event(keyPressed):
             if doc.positionX < 8:
                 doc.positionX += 1
     else:
-        print(f"Touche pressée : {key.decode()}")
+        return False
 
 def afficher_infos(vie, nbBlaster, nbDalek):
     print(f"nombre de vie : {vie}" )
     print(f"blaster shot : {nbBlaster}")
     print(f"nombre de dalek : {nbDalek}")
 
+def detruire_dalek(x, y):
+    for i in range(len(collectionDalek) - 1, -1, -1):  
+        dalek = collectionDalek[i]
+        if dalek.position == [x, y]:
+            grille[dalek.positionY][dalek.positionX] = vide
+            del collectionDalek[i]
+
 def blaster(nbBlaster):
-    if (nbBlaster < 1):
+    if nbBlaster < 1:
         return False
     else:
-        if (grille[doc.positionX+1][doc.positionY] == collectionDalek[1].position[doc.positionX+1,doc.positionY]):
-            grille[doc.positionX+1][doc.positionY] = vide
+        detruire_dalek(doc.positionX, doc.positionY + 1)
+        detruire_dalek(doc.positionX, doc.positionY - 1)
+        detruire_dalek(doc.positionX + 1, doc.positionY)
+        detruire_dalek(doc.positionX - 1, doc.positionY)
 
 def main():
+    creer_dalek(1,1,10,1,1)
     afficher_grille(grille)
     afficher_infos(nbVie, nbBlaster, nbDalek)
-
     while True:
         keyPressed = msvcrt.getch()
         cls()

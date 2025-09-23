@@ -6,9 +6,12 @@ vide = "🔲"
 dalekSymbole = "🔶"
 feraille = "🔳"
 
-vie = 1
+nbVie = 1
+nbBlaster = 1
 docteurAncienX = 0
 docteurAncienY = 0
+nbDeplacement = 0
+nbDalek = 0
 
 class Docteur:
     def __init__(self, vie, deplacement, x, y):
@@ -29,8 +32,9 @@ class Dalek:
         self.valeurCosmique = valeur
         self.positionX = x
         self.positionY = y
+        self.position = [x,y]
 
-dalek = Dalek(1,1,10,0,0)
+collectionDalek:list[Dalek] = []
 
 grille = [
     [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
@@ -49,17 +53,31 @@ def cls():
 def deplacer_docteur(grille, nouveauX, nouveauY):
     global docteurAncienX
     global docteurAncienY
+    global nbDeplacement
     grille[docteurAncienY][docteurAncienX] = vide
     grille[nouveauY][nouveauX] = docSymbole
     docteurAncienX = nouveauX
     docteurAncienY = nouveauY
+    nbDeplacement+=1
+    if nbDeplacement % 3 == 0:
+        creer_dalek(1, 1, 10, 0, 0)
+
+
+def creer_dalek(vie, deplacement, valeur, x, y):
+    global nbDalek
+    dalek = Dalek(vie,deplacement,valeur,x,y)
+    collectionDalek.append(dalek)
+    nbDalek+=1
+
 
 def afficher_grille(grille):
     for ligne in grille:
         print("".join(ligne))
 
 def on_key_event(keyPressed):
-    if keyPressed == b'\xe0':
+    if keyPressed == b'q':
+        blaster(nbBlaster)
+    elif keyPressed == b'\xe0':
         key2 = msvcrt.getch()
         if key2 == b'H':
             if doc.positionY > 0:
@@ -76,14 +94,30 @@ def on_key_event(keyPressed):
     else:
         print(f"Touche pressée : {key.decode()}")
 
+def afficher_infos(vie, nbBlaster, nbDalek):
+    print(f"nombre de vie : {vie}" )
+    print(f"blaster shot : {nbBlaster}")
+    print(f"nombre de dalek : {nbDalek}")
+
+def blaster(nbBlaster):
+    if (nbBlaster < 1):
+        return False
+    else:
+        if (grille[doc.positionX+1][doc.positionY] == collectionDalek[1].position[doc.positionX+1,doc.positionY]):
+            grille[doc.positionX+1][doc.positionY] = vide
+
 def main():
     afficher_grille(grille)
+    afficher_infos(nbVie, nbBlaster, nbDalek)
+
     while True:
         keyPressed = msvcrt.getch()
         cls()
         on_key_event(keyPressed)
         deplacer_docteur(grille, doc.positionX, doc.positionY)
         afficher_grille(grille)
+        afficher_infos(nbVie, nbBlaster, nbDalek)
+
 
 if __name__ == "__main__":
     main()

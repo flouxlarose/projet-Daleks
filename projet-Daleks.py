@@ -19,7 +19,7 @@ class Dalek:
         self.valeurCosmique = valeur
         self.positionX = x
         self.positionY = y
-        self.position = [x, y]
+        self.position = [x,y]
 
 docSymbole = "D"
 vide = "#"
@@ -31,35 +31,38 @@ def afficher_grille(grille):
         print("".join(ligne))
 
 grille = [
-    [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide, vide],
-    [vide, dalekSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
-    [vide, vide, vide, vide, vide, vide, vide, vide, dalekSymbole, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    [vide, vide, vide, vide, vide, vide, vide, vide, vide],
 ]
 
-afficher_grille(grille)
 
+collectionDalek = []
 def creerDalek(vie, deplacement, valeur, x, y):
-    dalek = Dalek(vie,1,5,5,5)
+    dalek = Dalek(vie,deplacement,valeur,x,y)
     collectionDalek.append(dalek)
     grille[y][x] = dalekSymbole
 
 
 # liste de tout les dalek
-collectionDalek:list[Dalek] = []
+# collectionDalek:list[Dalek] = []
 # comment creer un nouveau dalek
-dalek = Dalek(2,3,4,5,6)
 # rajouter le dalek a la liste
-collectionDalek.append(dalek)
+# collectionDalek.append(dalek)
 
-print(collectionDalek[0].valeurCosmique)
+# print(collectionDalek[0].valeurCosmique)
 
-def detruire_Dalek(x1,y1, ):
+def detruire_Dalek(x1,y1):
     global Dalek
     detruire = False
     compteurBoucle = 0
     for Dalek in collectionDalek:
-        if collectionDalek[compteurBoucle].position[0] == x and collectionDalek[compteurBoucle].position[1] == y:
+        if collectionDalek[compteurBoucle].position[0] == x1 and collectionDalek[compteurBoucle].position[1] == y1:
             detruire = True
             id = compteurBoucle
         compteurBoucle += 1
@@ -76,24 +79,37 @@ def deplacer_docteur(grille, nouveauX, nouveauY):
     docteurAncienY = nouveauY
 
 #  PREND UN NOMBRE RANDOM ENTRE 0 ET 3 (0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT)
-def deplacer_dalek(dalek: Dalek, direction):
-    if direction == 0 and grille[dalek.position[0]][dalek.position[0]] == vide:
-        x -= 1        
-    elif direction[random] == "right":
-        x += deplacement 
-    elif direction[random] == "down":
-        y += deplacement
-    elif direction[random] == "left":
-        x -= deplacement
+# random = randint(0, 3)
+def deplacer_dalek(dalek: Dalek):
+    direction = randint(0, 3)
 
-def mooveEntity(x, y, deplacement):
-    direction = ["up", "right", "down", "left"]
-    random = randint(0, 3)
-    
-    if grille[y[x]] == vide :
-        print("cum")
+    if direction == 0 and grille[(dalek.position[1] - 1) % 4][dalek.position[0]] == vide:     # direction UP
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[1] = dalek.position[1] - 1 % 8        
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 1 and grille[dalek.position[1]][(dalek.position[0] + 1) % 10] == vide:   # direction RIGHT
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[0] = dalek.position[0] + 1 % 9
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 2 and grille[(dalek.position[1] + 1) % 4][dalek.position[0]] == vide:   # direction DOWN        
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[1] = dalek.position[1] + 1 % 8
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 3 and grille[dalek.position[1]][(dalek.position[0] - 1) % 10] == vide:   # direction LEFT
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[0] = dalek.position[0] - 1 % 9
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
 
 
-creerDalek(1,1,1,0,0)
-detruire_Dalek(0,0)
+creerDalek(1, 1, 20, 4, 4)
+afficher_grille(grille)
+deplacer_dalek(collectionDalek[0])
+print("\n\n\n")
+afficher_grille(grille)
+
+print("what da helli")
+
 

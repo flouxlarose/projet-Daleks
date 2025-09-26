@@ -8,11 +8,12 @@ dalekSymbole = "🔶"
 feraille = "🔳"
 
 nbVie = 1
-nbBlaster = 1
+nbBlaster = 10
 docteurAncienX = 0
 docteurAncienY = 0
 nbDeplacement = 0
 nbDalek = 0
+score = 0
 
 class Docteur:
     def __init__(self, vie, deplacement, x, y):
@@ -61,39 +62,50 @@ def deplacer_docteur(grille, nouveauX, nouveauY):
     docteurAncienY = nouveauY
     nbDeplacement+=1
     if nbDeplacement % 3 == 0:
-        creer_dalek(1, 1, 10, 0, 0)
+        creer_dalek(1, 1, 10)
 
 def deplacer_dalek(dalek: Dalek):
+    x, y = dalek.position
     direction = randint(0, 3)
 
-    if direction == 0 and grille[(dalek.position[1] - 1) % 8][dalek.position[0]] == vide:     # direction UP
-        grille[dalek.position[1]][dalek.position[0]] = vide
-        dalek.position[1] = (dalek.position[1] - 1) % 8      
-        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+    if direction == 0:  # UP
+        if y > 0 and grille[y - 1][x] == vide:
+            grille[y][x] = vide
+            dalek.position[1] -= 1
+    elif direction == 1:  # RIGHT
+        if x < 9 - 1 and grille[y][x + 1] == vide:
+            grille[y][x] = vide
+            dalek.position[0] += 1
+    elif direction == 2:  # DOWN
+        if y < 8 - 1 and grille[y + 1][x] == vide:
+            grille[y][x] = vide
+            dalek.position[1] += 1
+    elif direction == 3:  # LEFT
+        if x > 0 and grille[y][x - 1] == vide:
+            grille[y][x] = vide
+            dalek.position[0] -= 1
 
-    elif direction == 1 and grille[dalek.position[1]][(dalek.position[0] + 1) % 9] == vide:   # direction RIGHT
-        grille[dalek.position[1]][dalek.position[0]] = vide
-        dalek.position[0] = dalek.position[0] + 1 % 9
-        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+    grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+    dalek.positionX = dalek.position[0]
+    dalek.positionY = dalek.position[1]
 
-    elif direction == 2 and grille[(dalek.position[1] + 1) % 8][dalek.position[0]] == vide:   # direction DOWN        
-        grille[dalek.position[1]][dalek.position[0]] = vide
-        dalek.position[1] = dalek.position[1] + 1 % 8
-        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
-
-    elif direction == 3 and grille[dalek.position[1]][(dalek.position[0] - 1) % 9] == vide:   # direction LEFT
-        grille[dalek.position[1]][dalek.position[0]] = vide
-        dalek.position[0] = dalek.position[0] - 1 % 9
-        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
-
-
-def creer_dalek(vie, deplacement, valeur, x, y):
+def creer_dalek(vie, deplacement, valeur):
     global nbDalek
+
+    while True:
+        randomX = randint(0, 8)  
+        randomY = randint(0, 7) 
+        if grille[randomY][randomX] == vide:
+            x, y = randomX, randomY
+            break
+
     dalek = Dalek(vie,deplacement,valeur,x,y)
     collectionDalek.append(dalek)
     grille[y][x] = dalekSymbole
     nbDalek+=1
 
+# def debris():
+    
 
 def afficher_grille(grille):
     for ligne in grille:
@@ -101,8 +113,8 @@ def afficher_grille(grille):
 
 def on_key_event(keyPressed):
     if keyPressed == b'q':
-        blaster(nbBlaster)
-    elif keyPressed == b'\xe0':
+        blaster()
+    elif keyPressed == b'\x00':
         key2 = msvcrt.getch()
         if key2 == b'H':
             if doc.positionY > 0:
@@ -119,33 +131,35 @@ def on_key_event(keyPressed):
     else:
         return False
 
-def afficher_infos(vie, nbBlaster, nbDalek):
-    print(f"nombre de vie : {vie}" )
-    print(f"blaster shot : {nbBlaster}")
-    print(f"nombre de dalek : {nbDalek}")
+def afficher_infos(nbBlaster, score):
+    print(f"Blaster shot : {nbBlaster}")
+    print(f"Score : {score}")
 
 def detruire_dalek(x, y):
+    global score
     for i in range(len(collectionDalek) - 1, -1, -1):  
         dalek = collectionDalek[i]
         if dalek.position == [x, y]:
             grille[dalek.positionY][dalek.positionX] = vide
+            score += 100
             del collectionDalek[i]
 
-def blaster(nbBlaster):
+def blaster():
+    global nbBlaster 
     if nbBlaster < 1:
         return False
     else:
-        detruire_dalek(doc.positionX, doc.positionY + 1)
-        detruire_dalek(doc.positionX, doc.positionY - 1)
-        detruire_dalek(doc.positionX + 1, doc.positionY)
-        detruire_dalek(doc.positionX - 1, doc.positionY)
-
+        nbBlaster -= 1
+        detruire_dalek(doc.positionX, doc.positionY + 1) # right
+        detruire_dalek(doc.positionX, doc.positionY - 1) # left
+        detruire_dalek(doc.positionX + 1, doc.positionY) # down
+        detruire_dalek(doc.positionX - 1, doc.positionY) # up
 
 
 def main():
-    creer_dalek(1,1,10,1,1)
+    creer_dalek(1,1,10)
     afficher_grille(grille)
-    afficher_infos(nbVie, nbBlaster, nbDalek)
+    afficher_infos(nbBlaster, score)
     while True:
         keyPressed = msvcrt.getch()
         cls()
@@ -154,9 +168,8 @@ def main():
         for dalek in collectionDalek:
             deplacer_dalek(dalek)
         afficher_grille(grille)
-        afficher_infos(nbVie, nbBlaster, nbDalek)
+        afficher_infos(nbBlaster, score)
 
 
 if __name__ == "__main__":
     main()
-

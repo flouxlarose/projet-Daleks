@@ -104,12 +104,23 @@ def deplacer_dalek(dalek: Dalek):
         grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
 
 
-creerDalek(1, 1, 20, 4, 4)
-afficher_grille(grille)
-deplacer_dalek(collectionDalek[0])
-print("\n\n\n")
-afficher_grille(grille)
+# TEST FONCTION POUR BOUGER LES DALEKS
+# creerDalek(1, 1, 20, 4, 4)
+# afficher_grille(grille)
+# deplacer_dalek(collectionDalek[0])
+# print("\n\n\n")
+# afficher_grille(grille)
 
-print("what da helli")
+# print("what da helli")
 
 
+
+def teleporteur(doc: Docteur):
+    teleportValide = False
+    while(not teleportValide):
+        x = randint(0, 9)
+        y = randint(0, 8)
+        if(grille[y][x] == vide):
+            teleportValide = True
+            deplacer_docteur(grille, x, y)
+        

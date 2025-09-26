@@ -1,5 +1,6 @@
 import msvcrt
 import os
+from random  import randint     # retourne un entier aléatoire entre 2 numéros inclus
 
 docSymbole = "🔷"
 vide = "🔲"
@@ -62,6 +63,30 @@ def deplacer_docteur(grille, nouveauX, nouveauY):
     if nbDeplacement % 3 == 0:
         creer_dalek(1, 1, 10, 0, 0)
 
+def deplacer_dalek(dalek: Dalek):
+    direction = randint(0, 3)
+
+    if direction == 0 and grille[(dalek.position[1] - 1) % 8][dalek.position[0]] == vide:     # direction UP
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[1] = (dalek.position[1] - 1) % 8      
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 1 and grille[dalek.position[1]][(dalek.position[0] + 1) % 9] == vide:   # direction RIGHT
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[0] = dalek.position[0] + 1 % 9
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 2 and grille[(dalek.position[1] + 1) % 8][dalek.position[0]] == vide:   # direction DOWN        
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[1] = dalek.position[1] + 1 % 8
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+    elif direction == 3 and grille[dalek.position[1]][(dalek.position[0] - 1) % 9] == vide:   # direction LEFT
+        grille[dalek.position[1]][dalek.position[0]] = vide
+        dalek.position[0] = dalek.position[0] - 1 % 9
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+
+
 def creer_dalek(vie, deplacement, valeur, x, y):
     global nbDalek
     dalek = Dalek(vie,deplacement,valeur,x,y)
@@ -115,6 +140,8 @@ def blaster(nbBlaster):
         detruire_dalek(doc.positionX + 1, doc.positionY)
         detruire_dalek(doc.positionX - 1, doc.positionY)
 
+
+
 def main():
     creer_dalek(1,1,10,1,1)
     afficher_grille(grille)
@@ -124,6 +151,8 @@ def main():
         cls()
         on_key_event(keyPressed)
         deplacer_docteur(grille, doc.positionX, doc.positionY)
+        for dalek in collectionDalek:
+            deplacer_dalek(dalek)
         afficher_grille(grille)
         afficher_infos(nbVie, nbBlaster, nbDalek)
 

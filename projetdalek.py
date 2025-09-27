@@ -24,8 +24,7 @@ class Docteur:
         self.teleporteur = True
         self.deplacementDocteur = deplacement
         self.creditCosmique = 0
-        self.positionX = x
-        self.positionY = y
+        self.position = [x,y]
 
 doc = Docteur(1,1,0,0)
 
@@ -34,8 +33,6 @@ class Dalek:
         self.vieDalek = vie
         self.deplacementDalek = deplacement
         self.valeurCosmique = valeur
-        self.positionX = x
-        self.positionY = y
         self.position = [x,y]
 
 collectionDalek:list[Dalek] = []
@@ -51,18 +48,55 @@ grille = [
     [vide, vide, vide, vide, vide, vide, vide, vide, vide],
 ]
 
+def re_initialise():
+    global nbVie
+    global nbBlaster 
+    global docteurAncienX
+    global docteurAncienY
+    global nbDeplacement
+    global nbDalek
+    global score
+    global grille
+    global collectionDalek
+
+    # re-init la grille
+    grille[:] = [  
+        [docSymbole, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+        [vide, vide, feraille, vide, vide, vide, vide, vide, vide],
+        [vide, vide, vide, vide, vide, vide, vide, vide, vide],
+    ]
+
+    # re-init les valeurs globals
+    nbVie = 1
+    nbBlaster = 10
+    docteurAncienX = 0
+    docteurAncienY = 0
+    nbDeplacement = 0
+    nbDalek = 0
+    score = 0
+
+    # re-init le doc
+    doc = Docteur(vie=1, deplacement=1, x=0, y=0)
+
+    # re-init daleks
+    collectionDalek = []
+
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
 
 def deplacer_docteur(grille, nouveauX, nouveauY):
-    global docteurAncienX
-    global docteurAncienY
+    global doc
     global nbDeplacement
     global niveau
-    grille[docteurAncienY][docteurAncienX] = vide
+    grille[doc.position[1]][doc.position[0]] = vide
     grille[nouveauY][nouveauX] = docSymbole
-    docteurAncienX = nouveauX
-    docteurAncienY = nouveauY
+    doc.position[0] = nouveauX
+    doc.position[1] = nouveauY
     nbDeplacement+=1
     if nbDeplacement % 3 == 0:
         creer_dalek(1, 1, 10)
@@ -88,10 +122,15 @@ def deplacer_dalek(dalek: Dalek):
         if x > 0:
             grille[y][x] = vide
             dalek.position[0] -= 1
+    collision_dalek()
 
     grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
-    dalek.positionX = dalek.position[0]
-    dalek.positionY = dalek.position[1]
+
+    def collision_dalek(dalek: Dalek):
+        if grille[dalek.position[1]][dalek.position[0]] == feraille:
+            collectionDalek.remove(dalek)
+            score += 100
+
 
 def creer_dalek(vie, deplacement, valeur):
     global nbDalek
@@ -107,6 +146,32 @@ def creer_dalek(vie, deplacement, valeur):
     grille[y][x] = dalekSymbole
     nbDalek+=1
     
+def ferailles():
+    global score
+    global collectionDalek
+    global grille
+    destroy = []
+    for i in range(len(collectionDalek)):
+        for k in range(i + 1, len(collectionDalek)):
+            if collectionDalek[i].position == collectionDalek[k].position:
+                grille[collectionDalek[i].position[1]][collectionDalek[i].position[0]] = feraille
+                if (collectionDalek[i] not in destroy):
+                    destroy.append(collectionDalek[i])
+                if (collectionDalek[k] not in destroy):
+                    destroy.append(collectionDalek[k])
+    for dalek in destroy:
+        if dalek in collectionDalek:
+            collectionDalek.remove(dalek)
+            score += 100
+
+def teleporteur(doc: Docteur):
+    teleportValide = False
+    while(not teleportValide):
+        x = randint(0, 8)
+        y = randint(0, 7)
+        if(grille[y][x] == vide):
+            teleportValide = True
+            deplacer_docteur(grille, x, y)
 
 def afficher_grille(grille):
     for ligne in grille:
@@ -115,20 +180,26 @@ def afficher_grille(grille):
 def on_key_event(keyPressed):
     if keyPressed == b'q':
         blaster()
+    elif keyPressed == b'e':
+        teleporteur()
     elif keyPressed == b'\x00':
         key2 = msvcrt.getch()
         if key2 == b'H':
-            if doc.positionY > 0:
-                doc.positionY -= 1              
+            if doc.position[1] > 0:
+                if not (grille[doc.position[1] - 1][doc.position[0]] == feraille):
+                    doc.position[1] -= 1              
         elif key2 == b'P':
-            if doc.positionY < 7:
-                doc.positionY += 1
+            if doc.position[1] < 7:
+                if not (grille[doc.position[1] + 1][doc.position[0]] == feraille):
+                    doc.position[1] += 1
         elif key2 == b'K':
-            if doc.positionX > 0:
-                doc.positionX -= 1
+            if doc.position[0] > 0:
+                if not (grille[doc.position[1]][doc.position[0] - 1] == feraille):
+                    doc.position[0] -= 1
         elif key2 == b'M':
-            if doc.positionX < 8:
-                doc.positionX += 1
+            if doc.position[0] < 8:
+                if not (grille[doc.position[1]][doc.position[0] + 1] == feraille):
+                    doc.position[0] += 1
     else:
         return False
 
@@ -142,7 +213,7 @@ def detruire_dalek(x, y):
     for i in range(len(collectionDalek) - 1, -1, -1):  
         dalek = collectionDalek[i]
         if dalek.position == [x, y]:
-            grille[dalek.positionY][dalek.positionX] = vide
+            grille[dalek.position[1]][dalek.position[0]] = vide
             score += 100
             del collectionDalek[i]
 
@@ -152,19 +223,19 @@ def blaster():
         return False
     else:
         nbBlaster -= 1
-        detruire_dalek(doc.positionX, doc.positionY + 1) # right
-        detruire_dalek(doc.positionX, doc.positionY - 1) # left
-        detruire_dalek(doc.positionX + 1, doc.positionY) # down
-        detruire_dalek(doc.positionX - 1, doc.positionY) # up
-        detruire_dalek(doc.positionX + 1, doc.positionY + 1) 
-        detruire_dalek(doc.positionX - 1, doc.positionY - 1) 
-        detruire_dalek(doc.positionX + 1, doc.positionY - 1) 
-        detruire_dalek(doc.positionX - 1, doc.positionY + 1) 
+        detruire_dalek(doc.position[0], doc.position[1] + 1) # right
+        detruire_dalek(doc.position[0], doc.position[1] - 1) # left
+        detruire_dalek(doc.position[0] + 1, doc.position[1]) # down
+        detruire_dalek(doc.position[0] - 1, doc.position[1]) # up
+        detruire_dalek(doc.position[0] + 1, doc.position[1] + 1) 
+        detruire_dalek(doc.position[0] - 1, doc.position[1] - 1) 
+        detruire_dalek(doc.position[0] + 1, doc.position[1] - 1) 
+        detruire_dalek(doc.position[0] - 1, doc.position[1] + 1) 
 
 
 def verifier_collision_docteur_dalek():
     for dalek in collectionDalek:
-        if dalek.position == [doc.positionX, doc.positionY]:
+        if dalek.position == [doc.position[0], doc.position[1]]:
             meilleurParties.append(score)
             print("\033[91mGAME OVER\033[0m")
             menu()
@@ -205,11 +276,12 @@ def main_jeu():
         keyPressed = msvcrt.getch()
         cls()
         on_key_event(keyPressed)
-        deplacer_docteur(grille, doc.positionX, doc.positionY)
+        deplacer_docteur(grille, doc.position[0], doc.position[1])
         verifier_collision_docteur_dalek()
         for dalek in collectionDalek:
             deplacer_dalek(dalek)
         verifier_collision_docteur_dalek()
+        ferailles()
         afficher_grille(grille)
         afficher_infos(nbBlaster, score, niveau)
 

@@ -58,6 +58,9 @@ def re_initialise():
     global score
     global grille
     global collectionDalek
+    global doc
+    global niveau
+    global meilleurParties
 
     # re-init la grille
     grille[:] = [  
@@ -73,12 +76,14 @@ def re_initialise():
 
     # re-init les valeurs globals
     nbVie = 1
-    nbBlaster = 10
+    nbBlaster = 3
     docteurAncienX = 0
     docteurAncienY = 0
     nbDeplacement = 0
     nbDalek = 0
     score = 0
+    niveau = 0
+    meilleurParties = []
 
     # re-init le doc
     doc = Docteur(vie=1, deplacement=1, x=0, y=0)
@@ -102,6 +107,14 @@ def deplacer_docteur(grille, nouveauX, nouveauY):
         creer_dalek(1, 1, 10)
         niveau += 1
 
+def collision_dalek(dalek: Dalek):
+    global score
+    global grille
+    if grille[dalek.position[1]][dalek.position[0]] == feraille:
+        grille[dalek.position[1]][dalek.position[0]] = feraille
+        collectionDalek.remove(dalek)
+        score += 100
+
 def deplacer_dalek(dalek: Dalek):
     x, y = dalek.position
     direction = randint(0, 3)
@@ -122,14 +135,11 @@ def deplacer_dalek(dalek: Dalek):
         if x > 0:
             grille[y][x] = vide
             dalek.position[0] -= 1
-    collision_dalek()
+    collision_dalek(dalek)
 
     grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
 
-    def collision_dalek(dalek: Dalek):
-        if grille[dalek.position[1]][dalek.position[0]] == feraille:
-            collectionDalek.remove(dalek)
-            score += 100
+
 
 
 def creer_dalek(vie, deplacement, valeur):
@@ -178,30 +188,26 @@ def afficher_grille(grille):
         print("".join(ligne))
 
 def on_key_event(keyPressed):
+    x, y = doc.position  # position actuelle
     if keyPressed == b'q':
         blaster()
     elif keyPressed == b'e':
-        teleporteur()
-    elif keyPressed == b'\x00':
+        teleporteur(doc)
+    elif keyPressed in [b'\x00', b'\xe0']:
         key2 = msvcrt.getch()
-        if key2 == b'H':
-            if doc.position[1] > 0:
-                if not (grille[doc.position[1] - 1][doc.position[0]] == feraille):
-                    doc.position[1] -= 1              
-        elif key2 == b'P':
-            if doc.position[1] < 7:
-                if not (grille[doc.position[1] + 1][doc.position[0]] == feraille):
-                    doc.position[1] += 1
-        elif key2 == b'K':
-            if doc.position[0] > 0:
-                if not (grille[doc.position[1]][doc.position[0] - 1] == feraille):
-                    doc.position[0] -= 1
-        elif key2 == b'M':
-            if doc.position[0] < 8:
-                if not (grille[doc.position[1]][doc.position[0] + 1] == feraille):
-                    doc.position[0] += 1
-    else:
-        return False
+        if key2 == b'H':  # UP
+            if y > 0 and grille[y-1][x] != feraille:
+                y -= 1
+        elif key2 == b'P':  # DOWN
+            if y < len(grille)-1 and grille[y+1][x] != feraille:
+                y += 1
+        elif key2 == b'K':  # LEFT
+            if x > 0 and grille[y][x-1] != feraille:
+                x -= 1
+        elif key2 == b'M':  # RIGHT
+            if x < len(grille[0])-1 and grille[y][x+1] != feraille:
+                x += 1
+    return x, y
 
 def afficher_infos(nbBlaster, score, niveau):
     print(f"Score : {score}")
@@ -269,14 +275,15 @@ def menu():
         menu()
 
 def main_jeu():
+    global nouveauX, nouveauY
     creer_dalek(1,1,10)
     afficher_grille(grille)
     afficher_infos(nbBlaster, score, niveau)
     while True:
         keyPressed = msvcrt.getch()
         cls()
-        on_key_event(keyPressed)
-        deplacer_docteur(grille, doc.position[0], doc.position[1])
+        nouveauX, nouveauY = on_key_event(keyPressed)
+        deplacer_docteur(grille, nouveauX, nouveauY)
         verifier_collision_docteur_dalek()
         for dalek in collectionDalek:
             deplacer_dalek(dalek)

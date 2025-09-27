@@ -114,6 +114,9 @@ def collision_dalek(dalek: Dalek):
         grille[dalek.position[1]][dalek.position[0]] = feraille
         collectionDalek.remove(dalek)
         score += 100
+        return True
+    else:
+        return False
 
 def deplacer_dalek(dalek: Dalek):
     x, y = dalek.position
@@ -135,9 +138,9 @@ def deplacer_dalek(dalek: Dalek):
         if x > 0:
             grille[y][x] = vide
             dalek.position[0] -= 1
-    collision_dalek(dalek)
-
-    grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
+    
+    if not collision_dalek(dalek):
+        grille[dalek.position[1]][dalek.position[0]] = dalekSymbole
 
 
 
